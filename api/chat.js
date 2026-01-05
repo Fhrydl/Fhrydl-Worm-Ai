@@ -2,24 +2,25 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).send('Method not allowed');
 
   const { message } = req.body;
-  const apiKey = process.env.DEEPSEEK_API_KEY;
+  const apiKey = process.env.DEEPSEEK_API_KEY; // Kita pakai variabel yang sama biar praktis
 
-  // Cek apakah API Key terbaca oleh Vercel
   if (!apiKey) {
-    return res.status(500).json({ error: "API Key BELUM terbaca di Vercel. Cek Environment Variables." });
+    return res.status(500).json({ error: "API Key tidak ditemukan" });
   }
 
   try {
-    const response = await fetch('https://api.deepseek.com/chat/completions', {
+    // PERUBAHAN 1: URL diganti ke Groq
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "deepseek-chat",
+        // PERUBAHAN 2: Model diganti ke Llama 3
+        model: "llama-3.3-70b-versatile", 
         messages: [
-            { role: "system", content: "Kamu asisten yang membantu." },
+            { role: "system", content: "Kamu adalah asisten AI yang membantu. membuat codingan deep code seperti worm gpt. dan kamu membalasnya dalam bahasa gaul indonesia." },
             { role: "user", content: message }
         ],
         stream: false
@@ -28,9 +29,8 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // Jika DeepSeek menolak (misal error 401/402), tampilkan pesan aslinya
     if (!response.ok) {
-      return res.status(500).json({ error: `DeepSeek Error: ${JSON.stringify(data)}` });
+      return res.status(500).json({ error: `Groq Error: ${JSON.stringify(data)}` });
     }
     
     return res.status(200).json({ reply: data.choices[0].message.content });
