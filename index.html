@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fhrydl Worm Ai - Pro Style</title>
+    <style>
+        /* --- 1. BASE STYLE --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Body Dark Gradient Hitam - Biru */
+        body {
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e3a8a 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* Container Glassmorphism (Wadah Utama) - UPDATE DI SINI */
+        .glass-container {
+            /* Opasitas diturunkan jadi 0.01 dan Blur diturunkan jadi 8px */
+            background: rgba(255, 255, 255, 0.01); 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            height: 90vh;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header Title */
+        h1 {
+            font-size: 24px;
+            background: linear-gradient(to right, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            color: #94a3b8;
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        /* --- 2. CHAT AREA STYLE --- */
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 15px;
+            scroll-behavior: smooth;
+        }
+
+        /* Scrollbar Custom */
+        #chat-container::-webkit-scrollbar { width: 5px; }
+        #chat-container::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        /* Bubbles */
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            position: relative;
+            word-wrap: break-word;
+            animation: slideUp 0.3s ease;
+        }
+
+        /* User Bubble */
+        .user-msg {
+            align-self: flex-end;
+            background: linear-gradient(to right, #2563eb, #1d4ed8);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* AI Bubble (Update agar lebih transparan juga) */
+        .ai-msg {
+            align-self: flex-start;
+            background: rgba(15, 23, 42, 0.6); /* Sedikit lebih transparan */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            border-bottom-left-radius: 4px;
+        }
+
+        /* Code Block Styling */
+        pre {
+            background: #020617;
+            padding: 10px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid #334155;
+            margin-top: 5px;
+            font-size: 0.8rem;
+        }
+
+        /* --- 3. INPUT AREA (Tools & Text) --- */
+        .input-wrapper {
+            background: rgba(15, 23, 42, 0.5); /* Sedikit lebih transparan */
+            border: 1px solid #334155;
+            padding: 10px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Tools Bar (File, Camera) */
+        .tools-bar {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .tool-btn:hover { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border-color: #60a5fa; }
+        .tool-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+        /* Text Area */
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 5px;
+            resize: none;
+            height: 40px;
+            max-height: 100px;
+            outline: none;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        textarea::placeholder { color: #64748b; }
+
+        /* Send Button */
+        #btnKirim {
+            background: linear-gradient(to right, #60a5fa, #3b82f6);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+        #btnKirim:active { transform: scale(0.95); }
+        #btnKirim:disabled { opacity: 0.5; cursor: not-allowed; background: #475569; }
+        #btnKirim svg { fill: white; width: 20px; height: 20px; }
+
+        /* --- 4. ANIMASI BINTANG & LAINNYA --- */
+        #star-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; 
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            top: -10px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: fall linear infinite;
+            /* Menambah terang bintang agar lebih kontras */
+            box-shadow: 0 0 10px white, 0 0 25px #3b82f6; 
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh) translateX(20px); opacity: 0; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Footer Links */
+        .footer-links {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .footer-icon {
+            color: #64748b;
+            transition: 0.3s;
+        }
+        .footer-icon:hover { color: #60a5fa; transform: scale(1.1); }
+        .footer-icon svg { width: 20px; height: 20px; fill: currentColor; }
+
+    </style>
+</head>
+<body>
+
+    <div id="star-container"></div>
+
+    <div class="glass-container">
+        
+        <header>
+            <h1>Fhrydl Worm Ai</h1>
+            <p class="subtitle">AI Coding Assistant • Deep Logic • Fast Response</p>
+        </header>
+
+        <div id="chat-container">
+            <div class="message ai-msg">
+                Halo Bro! Gue <b>Fhrydl Worm Ai</b>
+            </div>
+        </div>
+
+        <div class="input-wrapper">
+            <div class="tools-bar">
+                <label class="tool-btn" title="Upload File">
+                    <input type="file" id="fileInput" hidden onchange="handleFile(this)">
+                    <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5a2.5 2.5 0 0 0 5 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+                </label>
+                
+                <label class="tool-btn" title="Kamera">
+                    <input type="file" id="camInput" accept="image/*" capture="environment" hidden onchange="handleFile(this)">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/><path d="M20 4h-3.17L15 2H9L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 11.5V13H9v2.5L5.5 12 9 8.5V11h6V8.5l3.5 3.5-3.5 3.5z"/></svg>
+                </label>
+            </div>
+
+            <div class="input-row">
+                <textarea id="prompt" placeholder="Ketik pesan atau paste kode..."></textarea>
+                <button onclick="kirimPesan()" id="btnKirim">
+                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="footer-links">
+            <a href="https://t.me/Fhrydl_bot" target="_blank" class="footer-icon" title="Telegram">
+                <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 11.944 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.638z"/></svg>
+            </a>
+            <a href="https://www.instagram.com/fahriyadil_" target="_blank" class="footer-icon" title="Instagram">
+                <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.36-.2 6.78-2.615 6.98-6.98.058-1.281.072-1.689.072-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.98-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIC ANIMASI BINTANG ---
+        function createStars() {
+            const container = document.getElementById('star-container');
+            const starCount = 30; // Tambah dikit bintangnya biar rame
+
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                const size = Math.random() * 2 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.animationDuration = (Math.random() * 5 + 3) + 's';
+                star.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(star);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', createStars);
+
+        // --- LOGIC CHAT WORM AI ---
+        let conversationHistory = [];
+        const inputField = document.getElementById('prompt');
+
+        function handleFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    inputField.value += `[Mengirim Gambar: ${file.name}]\n`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    inputField.value += `\n\nFile: ${file.name}\n\`\`\`\n${content}\n\`\`\`\n\n`;
+                    inputField.focus();
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        async function kirimPesan() {
+            const chatContainer = document.getElementById('chat-container');
+            const btn = document.getElementById('btnKirim');
+            const userText = inputField.value.trim();
+
+            if (!userText) return;
+
+            appendMessage(userText, 'user-msg');
+            inputField.value = ''; 
+            
+            conversationHistory.push({ role: "user", content: userText });
+
+            btn.disabled = true;
+            const loadingBubble = document.createElement('div');
+            loadingBubble.className = 'message ai-msg';
+            loadingBubble.innerHTML = "<i>Sedang berpikir...</i>";
+            loadingBubble.id = 'loading-bubble';
+            chatContainer.appendChild(loadingBubble);
+            scrollToBottom();
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ history: conversationHistory })
+                });
+
+                const data = await res.json();
+                document.getElementById('loading-bubble').remove();
+
+                if (data.reply) {
+                    appendMessage(data.reply, 'ai-msg');
+                    conversationHistory.push({ role: "assistant", content: data.reply });
+                } else {
+                    appendMessage("Error: " + JSON.stringify(data), 'ai-msg');
+                }
+
+            } catch (err) {
+                if(document.getElementById('loading-bubble')) document.getElementById('loading-bubble').remove();
+                appendMessage("Gagal terhubung: " + err, 'ai-msg');
+            } finally {
+                btn.disabled = false;
+                scrollToBottom();
+            }
+        }
+
+        function appendMessage(text, className) {
+            const chatContainer = document.getElementById('chat-container');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${className}`;
+            
+            if (className === 'ai-msg') {
+                let formatted = text.replace(/```([\s\S]*?)```/g, '<pre>$1</pre>');
+                formatted = formatted.replace(/\n/g, '<br>');
+                msgDiv.innerHTML = formatted;
+            } else {
+                msgDiv.innerText = text;
+            }
+
+            chatContainer.appendChild(msgDiv);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        inputField.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                kirimPesan();
+            }
+        });
+    </script>
+</body>
+</html>
