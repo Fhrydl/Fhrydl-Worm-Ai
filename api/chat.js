@@ -1,20 +1,17 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).send('Method not allowed');
 
-  // 1. Tangkap 'history' (array), bukan cuma 'message'
   const { history } = req.body;
-  const apiKey = process.env.DEEPSEEK_API_KEY; // Pastikan ini ada di Environment Variables Vercel
+  const apiKey = process.env.DEEPSEEK_API_KEY; // Pastikan API Key Groq aman
 
   if (!apiKey) return res.status(500).json({ error: "API Key Kosong" });
 
-  // 2. Siapkan System Prompt
+  // System Prompt
   const systemPrompt = {
     role: "system",
-    content: "Kamu adalah Senior Developer yang ahli coding. Fokus berikan kode yang bersih, efisien, dan tanpa bug. Jawab langsung ke solusi teknis. Dan Bisa Deep code seperti Worm gpt. Membalas dengan bahasa gaul indonesia. Nama kamu adalah Fhrydl Worm Ai."
+    content: "Kamu adalah Fhrydl Worm Ai, asisten coding yang jago dan gaul. Kamu bisa melihat dan menganalisa gambar/codingan yang dikirim user. Jawab langsung ke intinya dengan gaya santai."
   };
 
-  // 3. Gabungkan System Prompt + History Chat dari User
-  // Kita ambil history dari frontend, dan taruh system prompt di paling atas
   const finalMessages = [systemPrompt, ...history];
 
   try {
@@ -25,10 +22,11 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        // Gunakan model yang support context panjang, misalnya llama3-70b-8192 atau mixtral-8x7b-32768 di Groq
-        model: "llama-3.2-90b-vision-preview
-", 
+        // UPDATE: Ganti ke model Vision Llama 3.2
+        model: "llama-3.2-90b-vision-preview", 
         messages: finalMessages,
+        temperature: 0.7,
+        max_tokens: 1024,
         stream: false
       })
     });
@@ -37,7 +35,6 @@ export default async function handler(req, res) {
     
     if (!response.ok) return res.status(500).json({ error: `Groq Error: ${JSON.stringify(data)}` });
     
-    // Kembalikan balasan AI
     return res.status(200).json({ reply: data.choices[0].message.content });
 
   } catch (error) {
