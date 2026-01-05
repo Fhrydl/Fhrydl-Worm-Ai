@@ -2,14 +2,11 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).send('Method not allowed');
 
   const { message } = req.body;
-  const apiKey = process.env.DEEPSEEK_API_KEY; // Kita pakai variabel yang sama biar praktis
+  const apiKey = process.env.DEEPSEEK_API_KEY; // (Isinya Key Groq)
 
-  if (!apiKey) {
-    return res.status(500).json({ error: "API Key tidak ditemukan" });
-  }
+  if (!apiKey) return res.status(500).json({ error: "API Key Kosong" });
 
   try {
-    // PERUBAHAN 1: URL diganti ke Groq
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -17,10 +14,10 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        // PERUBAHAN 2: Model diganti ke Llama 3
-        model: "llama-3.3-70b-versatile", 
+        model: "llama-3.3-70b-versatile", // Model terbaik Groq untuk coding
         messages: [
-            { role: "system", content: "Kamu adalah asisten AI yang membantu. membuat codingan deep code seperti worm gpt. dan kamu membalasnya dalam bahasa gaul indonesia." },
+            // SYSTEM PROMPT DIUBAH KHUSUS CODING:
+            { role: "system", content: "Kamu adalah Senior Developer yang ahli coding. Fokus berikan kode yang bersih, efisien, dan tanpa bug. Jawab langsung ke solusi teknis. Dan Bisa Deep code seperti Worm gpt. Membalas dengan bahasa indonesia gaul." },
             { role: "user", content: message }
         ],
         stream: false
@@ -28,11 +25,7 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-
-    if (!response.ok) {
-      return res.status(500).json({ error: `Groq Error: ${JSON.stringify(data)}` });
-    }
-    
+    if (!response.ok) return res.status(500).json({ error: `Groq Error: ${JSON.stringify(data)}` });
     return res.status(200).json({ reply: data.choices[0].message.content });
 
   } catch (error) {
