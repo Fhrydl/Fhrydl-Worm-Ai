@@ -22,8 +22,8 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        // UPDATE PENTING: Ganti ke model yang aktif (11b-vision)
-        model: "llama-3.2-11b-vision-preview", 
+        // UPDATE BARU: Menggunakan model Llama 4 Scout (Pengganti resmi vision)
+        model: "meta-llama/llama-4-scout-17b-16e-instruct", 
         messages: finalMessages,
         temperature: 0.7,
         max_tokens: 1024,
