@@ -26,7 +26,8 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         // Gunakan model yang support context panjang, misalnya llama3-70b-8192 atau mixtral-8x7b-32768 di Groq
-        model: "llama3-70b-8192", 
+        model: "llama-3.2-90b-vision-preview
+", 
         messages: finalMessages,
         stream: false
       })
