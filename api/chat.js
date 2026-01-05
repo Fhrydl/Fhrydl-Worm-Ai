@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         // Gunakan model yang support context panjang, misalnya llama3-70b-8192 atau mixtral-8x7b-32768 di Groq
-        model: "openai/gpt-oss-120b", 
+        model: "llama3-70b-8192", 
         messages: finalMessages,
         stream: false
       })
