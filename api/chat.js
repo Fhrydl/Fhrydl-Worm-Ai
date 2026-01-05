@@ -2,7 +2,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).send('Method not allowed');
 
   const { history } = req.body;
-  const apiKey = process.env.DEEPSEEK_API_KEY; // Pastikan API Key Groq aman
+  const apiKey = process.env.DEEPSEEK_API_KEY; // Pastikan ini ada di Vercel env
 
   if (!apiKey) return res.status(500).json({ error: "API Key Kosong" });
 
@@ -22,8 +22,8 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        // UPDATE: Ganti ke model Vision Llama 3.2
-        model: "llama-3.2-90b-vision-preview", 
+        // UPDATE PENTING: Ganti ke model yang aktif (11b-vision)
+        model: "llama-3.2-11b-vision-preview", 
         messages: finalMessages,
         temperature: 0.7,
         max_tokens: 1024,
@@ -33,7 +33,10 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     
-    if (!response.ok) return res.status(500).json({ error: `Groq Error: ${JSON.stringify(data)}` });
+    // Error Handling jika Groq menolak request
+    if (!response.ok) {
+        return res.status(500).json({ error: `Groq Error: ${JSON.stringify(data)}` });
+    }
     
     return res.status(200).json({ reply: data.choices[0].message.content });
 
