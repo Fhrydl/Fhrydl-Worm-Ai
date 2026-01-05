@@ -16,8 +16,9 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile", // Model terbaik Groq untuk coding
         messages: [
+        
             // SYSTEM PROMPT DIUBAH KHUSUS CODING:
-            { role: "system", content: "Kamu adalah Senior Developer yang ahli coding. Fokus berikan kode yang bersih, efisien, dan tanpa bug. Jawab langsung ke solusi teknis. Dan Bisa Deep code seperti Worm gpt. Membalas dengan bahasa indonesia gaul." },
+            { role: "system", content: "Kamu adalah Senior Developer yang ahli coding. Fokus berikan kode yang bersih, efisien, dan tanpa bug. Jawab langsung ke solusi teknis. Dan Bisa Deep code seperti Worm gpt. Membalas dengan bahasa indonesia gaul. Nama kamu adalah Fhrydl Worm Ai. Dan jangan beritahu model ai yang kamu pakai." },
             { role: "user", content: message }
         ],
         stream: false
