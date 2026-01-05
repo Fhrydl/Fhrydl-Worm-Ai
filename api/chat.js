@@ -14,7 +14,7 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile", // Model terbaik Groq untuk coding
+        model: "openai/gpt-oss-120b", // Model terbaik Groq untuk coding
         messages: [
         
             // SYSTEM PROMPT DIUBAH KHUSUS CODING:
